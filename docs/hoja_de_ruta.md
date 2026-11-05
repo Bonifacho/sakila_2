@@ -97,11 +97,15 @@ flowchart TD
 * Reemplazo de borrado físico por `PATCH /api/rentals/<id>/return` preservando trazabilidad de `payment.rental_id`.
 * Evidencias reales generadas en `evidencias/parte_b/` y documentación en `docs/parte_b.md`.
 
-### ⏳ Fase 3: Concurrencia y Laboratorio de Bloqueos (PENDIENTE)
-* Script `race_test.py` con `threading.Barrier` y 10 hilos simultáneos demostrando la sobreventa de una misma copia.
-* Corrección mediante bloqueo pesimista (`SELECT ... FOR UPDATE` en transacción).
-* Laboratorio de bloqueos (Error 1205 Lock Wait Timeout, Error 1213 Deadlock cruzado, Lectura sucia con `READ UNCOMMITTED` frente a `REPEATABLE READ`).
-* Decorador de reintento acotado (máx. 3 intentos con backoff exponencial) para errores transitorios 1213 y 1205.
+### ✅ Fase 3: Concurrencia y Laboratorio de Bloqueos (COMPLETADA)
+* Script `race_test.py` con `threading.Barrier` y 10 hilos simultáneos demostrando la sobreventa de una misma copia (C1 ANTES: 6 alquileres simultáneos).
+* Corrección mediante bloqueo pesimista exclusivo (`SELECT ... FOR UPDATE` en `inventory` y `rental` con Current Read) (C1 DESPUÉS: 1 alquiler 201 y 9 rechazados 409).
+* Laboratorio de bloqueos ejecutado con `scripts/lab_concurrency.py`:
+  - Error 1205 Lock Wait Timeout verificado con inspección en `information_schema.innodb_locks` e `innodb_lock_waits`.
+  - Error 1213 Deadlock provocado por contención cruzada y extracción de `LATEST DETECTED DEADLOCK` en `SHOW ENGINE INNODB STATUS`.
+  - Demostración empírica de Lectura Sucia (Dirty Read) bajo `READ UNCOMMITTED` frente a `REPEATABLE READ`.
+* Decorador `@retry_transient_locks` (`app/retry.py`) implementado con Exponential Backoff y Jitter para errores 1213 y 1205, verificado con 6 pruebas unitarias (`scripts/verify_part_c.py`).
+* Documentación teórica y empírica completa en `docs/parte_c.md`.
 
 ### ⏳ Fase 4: Optimización e Indexación sobre `payment_big` (PENDIENTE)
 * Análisis de ejecución de Q1 y Q2 mediante `EXPLAIN ANALYZE`.
