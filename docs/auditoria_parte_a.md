@@ -10,6 +10,8 @@
 Los cuatro incidentes fueron reproducidos y registrados mediante el script automatizado `scripts/audit_part_a.py`.
 
 ### Incidente (a): Inyección SQL
+![Evidencia A1(a): Inyección SQL](../evidencias/parte_a/A1_a_inyeccion_sql.png)
+
 * **Petición ejecutada:**
   ```http
   GET /api/payments/report?day=x' OR '1'='1' LIMIT 5 -- - HTTP/1.1
@@ -42,6 +44,8 @@ Los cuatro incidentes fueron reproducidos y registrados mediante el script autom
 ---
 
 ### Incidente (b): Information Exposure (Fuga de Información)
+![Evidencia A1(b): Information Exposure](../evidencias/parte_a/A1_b_information_exposure.png)
+
 * **Petición ejecutada:**
   ```http
   GET /api/checkout?customer_id=99999&inventory_id=1&staff_id=1&amount=2.99 HTTP/1.1
@@ -61,6 +65,8 @@ Los cuatro incidentes fueron reproducidos y registrados mediante el script autom
 ---
 
 ### Incidente (c): Alquiler Huérfano (Quiebre de Atomicidad ACID)
+![Evidencia A1(c): Alquiler Huérfano](../evidencias/parte_a/A1_c_alquiler_huerfano.png)
+
 * **Petición ejecutada:**
   ```http
   GET /api/checkout?customer_id=1&inventory_id=1&staff_id=1&amount=99999 HTTP/1.1
@@ -93,6 +99,8 @@ Los cuatro incidentes fueron reproducidos y registrados mediante el script autom
 ---
 
 ### Incidente (d): Handshake por Petición (Agotamiento de Conexiones)
+![Evidencia A1(d): Handshake por Petición](../evidencias/parte_a/A1_d_handshake_por_peticion.png)
+
 * **Petición evaluada en bucle (50 veces):**
   ```http
   GET /api/payments/report?day=2005-07-09 HTTP/1.1
@@ -137,3 +145,4 @@ Los cuatro incidentes fueron reproducidos y registrados mediante el script autom
    * **Justificación:** Genera una inconsistencia financiera directa en el negocio. Si la inserción del pago falla (por fallo de red, tarjeta o validación de monto), la película ya quedó registrada como alquilada y descontada del inventario físico sin registrar ningún ingreso monetario. Viola el principio más básico de las transacciones ACID.
 3. **Condición de Carrera en la Reserva de Inventario (Líneas 20-24):**
    * **Justificación:** Es un fallo de arquitectura de concurrencia (TOCTOU). En entornos con múltiples sucursales o peticiones concurrentes, la verificación `SELECT inventory_in_stock` no reserva la fila, permitiendo que múltiples clientes alquilen simultáneamente el mismo ejemplar físico de una película, generando sobreventa e incidentes en mostrador.
+

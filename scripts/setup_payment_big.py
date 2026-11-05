@@ -68,3 +68,4 @@ print(f"¡Listo! payment_big poblada con {total:,} registros en {elapsed:.2f} se
 
 cur.close()
 conn.close()
+
