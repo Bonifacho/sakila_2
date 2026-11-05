@@ -17,3 +17,4 @@ def report():
         current_app.config["MAX_PAGE_SIZE"],
     )
     return success(report_service.daily_report(day, page, page_size))
+

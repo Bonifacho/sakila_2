@@ -26,3 +26,4 @@ GRANT EXECUTE ON FUNCTION sakila.inventory_in_stock TO 'sakila_app'@'localhost';
 
 -- Sin DELETE, sin DDL (CREATE/DROP/ALTER), sin GRANT OPTION, sin acceso a otras BD.
 FLUSH PRIVILEGES;
+

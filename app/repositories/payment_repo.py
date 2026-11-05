@@ -12,3 +12,4 @@ def payments_by_day(cur, day_start, day_end, limit, offset):
         (day_start, day_end, limit, offset),
     )
     return cur.fetchall()
+

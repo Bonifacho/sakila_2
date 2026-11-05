@@ -94,3 +94,4 @@ def return_rental(rental_id):
         finally:
             cur.close()
     return _serialize_rental(row)
+

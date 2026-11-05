@@ -64,3 +64,4 @@ def get_connection():
             finally:
                 conn.close()  # en una conexión de pool, close() la DEVUELVE al pool
         _slots.release()
+

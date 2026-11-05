@@ -35,3 +35,4 @@ class Config:
     DEBUG = os.getenv("FLASK_DEBUG", "False").lower() == "true"
     PORT = int(os.getenv("PORT", "5000"))
     LOG_FILE = os.getenv("LOG_FILE", "logs/app.log")
+

@@ -28,3 +28,4 @@ def daily_report(day, page, page_size):
     ]
     return {"day": day.isoformat(), "page": page, "page_size": page_size,
             "count": len(items), "items": items}
+

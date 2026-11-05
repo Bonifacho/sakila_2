@@ -28,3 +28,4 @@ def get_rental(rental_id):
 def return_rental(rental_id):
     rid = parse_int(rental_id, "rental_id", 1, INT_MAX)
     return success(rental_service.return_rental(rid))
+

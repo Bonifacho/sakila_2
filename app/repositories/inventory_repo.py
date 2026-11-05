@@ -25,3 +25,4 @@ def get_inventory_rate(cur, inventory_id):
 def is_in_stock(cur, inventory_id):
     cur.execute("SELECT inventory_in_stock(%s)", (inventory_id,))
     return bool(cur.fetchone()[0])
+

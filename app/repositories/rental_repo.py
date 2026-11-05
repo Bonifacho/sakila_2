@@ -32,3 +32,4 @@ def mark_returned(cur, rental_id):
         (rental_id,),
     )
     return cur.rowcount
+

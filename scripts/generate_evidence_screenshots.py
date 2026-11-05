@@ -242,3 +242,4 @@ if __name__ == "__main__":
     generate_img_c()
     generate_img_d()
     print("Todas las capturas visuales han sido generadas en evidencias/parte_a/")
+

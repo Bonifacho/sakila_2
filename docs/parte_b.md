@@ -90,3 +90,4 @@ PATCH /api/rentals/<id>/return   → registra return_date = NOW()
 - Si el alquiler ya fue devuelto responde 409, y 404 si no existe (`B6_devolucion.txt`).
 - El histórico de `rental` y `payment` se conserva íntegro.
 - `sakila_app` no tiene privilegio `DELETE`, así que el borrado físico queda impedido también a nivel de base de datos.
+

@@ -76,3 +76,4 @@ def register_error_handlers(app):
     def handle_unexpected(err):
         logger.exception("Error no controlado")
         return _error(500, "INTERNAL_ERROR", "Error interno del servidor")
+
