@@ -1,0 +1,32 @@
+# B3 - Fallo provocado en el INSERT de payment: ROLLBACK total
+# Ejecutado: 2026-11-04T22:34:14
+
+SQL (root)> CREATE TRIGGER trg_test_fail_payment BEFORE INSERT ON payment FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Fallo simulado en payment';
+
+rental COUNT(*) antes: 16046
+
+> POST /api/checkout
+> Body: {"customer_id": 3, "inventory_id": 2, "staff_id": 1}
+< HTTP 500
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "Error interno del servidor"
+  }
+}
+
+rental COUNT(*) después: 16046
+SQL> SELECT * FROM rental WHERE inventory_id = 2 AND return_date IS NULL;
++-----------+-------------+--------------+-------------+
+| rental_id | rental_date | inventory_id | customer_id |
++-----------+-------------+--------------+-------------+
++-----------+-------------+--------------+-------------+
+0 row(s)
+
+Resultado: SIN alquiler huérfano (ROLLBACK OK)
+
+SQL (root)> DROP TRIGGER IF EXISTS trg_test_fail_payment;
+
+Log del servidor (logs/app.log) - el detalle solo queda aquí:
+2026-11-04 22:34:14,911 ERROR [app.errors] Error de base de datos errno=1644 sqlstate=45000 msg=Fallo simulado en payment

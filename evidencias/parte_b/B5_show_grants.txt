@@ -1,0 +1,17 @@
+# B5 - SHOW GRANTS FOR 'sakila_app'@'localhost'
+# Ejecutado: 2026-11-04T22:34:15
+
++-----------------------------------------------------------------------------------------------+
+| Grants for sakila_app@localhost                                                               |
++-----------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `sakila_app`@`localhost` IDENTIFIED BY PASSWORD '***'                   |
+| GRANT SELECT ON `sakila`.`customer` TO `sakila_app`@`localhost`                               |
+| GRANT SELECT ON `sakila`.`payment_big` TO `sakila_app`@`localhost`                            |
+| GRANT SELECT ON `sakila`.`staff` TO `sakila_app`@`localhost`                                  |
+| GRANT SELECT, INSERT ON `sakila`.`payment` TO `sakila_app`@`localhost`                        |
+| GRANT SELECT ON `sakila`.`film` TO `sakila_app`@`localhost`                                   |
+| GRANT SELECT, INSERT, UPDATE (`return_date`) ON `sakila`.`rental` TO `sakila_app`@`localhost` |
+| GRANT SELECT ON `sakila`.`inventory` TO `sakila_app`@`localhost`                              |
+| GRANT EXECUTE ON FUNCTION `sakila`.`inventory_in_stock` TO `sakila_app`@`localhost`           |
++-----------------------------------------------------------------------------------------------+
+9 row(s)
