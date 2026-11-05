@@ -1,0 +1,85 @@
+{
+  "a_sqli": {
+    "request_url": "http://127.0.0.1:5000/api/payments/report?day=x' OR '1'='1' LIMIT 5 -- -",
+    "status_code": 200,
+    "response_json": [
+      {
+        "amount": "2.99",
+        "customer_id": 1,
+        "payment_date": "Wed, 25 May 2005 11:30:37 GMT",
+        "payment_id": 1,
+        "rental_id": 76,
+        "staff_id": 1
+      },
+      {
+        "amount": "2.99",
+        "customer_id": 1,
+        "payment_date": "Sat, 04 Jun 2005 11:30:37 GMT",
+        "payment_id": 2,
+        "rental_id": 76,
+        "staff_id": 1
+      },
+      {
+        "amount": "2.99",
+        "customer_id": 1,
+        "payment_date": "Tue, 14 Jun 2005 11:30:37 GMT",
+        "payment_id": 3,
+        "rental_id": 76,
+        "staff_id": 1
+      },
+      {
+        "amount": "2.99",
+        "customer_id": 1,
+        "payment_date": "Fri, 24 Jun 2005 11:30:37 GMT",
+        "payment_id": 4,
+        "rental_id": 76,
+        "staff_id": 1
+      },
+      {
+        "amount": "2.99",
+        "customer_id": 1,
+        "payment_date": "Mon, 04 Jul 2005 11:30:37 GMT",
+        "payment_id": 5,
+        "rental_id": 76,
+        "staff_id": 1
+      }
+    ]
+  },
+  "b_info_exposure": {
+    "request_url": "http://127.0.0.1:5000/api/checkout?customer_id=99999&inventory_id=1&staff_id=1&amount=2.99",
+    "status_code": 200,
+    "response_json": {
+      "message": "Out of range value for column 'customer_id' at row 1",
+      "sqlstate": "22003",
+      "status": "error"
+    }
+  },
+  "c_orphan_rental": {
+    "request_url": "http://127.0.0.1:5000/api/checkout?customer_id=1&inventory_id=1&staff_id=1&amount=99999",
+    "status_code": 200,
+    "response_json": {
+      "message": "Out of range value for column 'amount' at row 1",
+      "sqlstate": "22003",
+      "status": "error"
+    },
+    "new_rentals": [
+      {
+        "rental_id": 16054,
+        "rental_date": "2026-11-04 21:31:47",
+        "inventory_id": 1,
+        "customer_id": 1,
+        "return_date": null,
+        "staff_id": 1,
+        "last_update": "2026-11-04 21:31:47"
+      }
+    ],
+    "new_payments": []
+  },
+  "d_handshake": {
+    "request_url": "http://127.0.0.1:5000/api/payments/report?day=2005-07-09",
+    "calls_count": 50,
+    "connections_before": 21,
+    "connections_after": 72,
+    "growth": 51
+  }
+}

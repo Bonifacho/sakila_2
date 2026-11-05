@@ -1,12 +1,18 @@
 # legacy_app.py - Sakila Rental Engine v0.1 (código heredado)
+import os
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import mysql.connector
+
+load_dotenv()
 
 app = Flask(__name__)
 
 def get_conn():
-    return mysql.connector.connect(host="localhost", user="root",
-                                   password="root", database="sakila")
+    # En el original: password="root". Se permite fallback a variable de entorno para entornos locales.
+    db_pass = os.getenv("DB_PASSWORD", "root")
+    return mysql.connector.connect(host="127.0.0.1", user="root",
+                                   password=db_pass, database="sakila")
 
 @app.route("/api/checkout", methods=["GET"])
 def checkout():
@@ -52,3 +58,4 @@ def report():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
