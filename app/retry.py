@@ -45,3 +45,4 @@ def retry_transient_locks(max_attempts=3, base_delay=0.05, max_delay=0.5):
                         raise
         return wrapper
     return decorator
+

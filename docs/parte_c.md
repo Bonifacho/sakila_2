@@ -283,3 +283,4 @@ def retry_transient_locks(max_attempts=3, base_delay=0.05, max_delay=0.5):
 | **C4(b). Deadlock (1213) y `INNODB STATUS`** | Cumplido al 100% | `scripts/lab_concurrency.py`<br>`evidencias/parte_c/C4_b_deadlock_1213.txt` |
 | **C4(c). Dirty Read (`READ UNCOMMITTED` vs `RR`)** | Cumplido al 100% | `scripts/lab_concurrency.py`<br>`evidencias/parte_c/C4_c_dirty_read.txt` |
 | **C5. Retry acotado con Exponential Backoff y Jitter** | Cumplido al 100% | `app/retry.py`<br>`scripts/verify_part_c.py` |
+
