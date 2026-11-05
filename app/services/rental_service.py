@@ -11,6 +11,7 @@ import logging
 from app.db import get_connection
 from app.errors import ConflictError, NotFoundError, UnavailableError
 from app.repositories import inventory_repo, rental_repo
+from app.retry import retry_transient_locks
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ def _serialize_rental(row):
     }
 
 
+@retry_transient_locks(max_attempts=3, base_delay=0.05)
 def checkout(customer_id, inventory_id, staff_id):
     with get_connection() as conn:
         cur = conn.cursor()
@@ -36,18 +38,28 @@ def checkout(customer_id, inventory_id, staff_id):
                 raise NotFoundError("El cliente no existe")
             if not inventory_repo.staff_exists(cur, staff_id):
                 raise NotFoundError("El empleado no existe")
+
+            # 1. Bloqueo pesimista exclusivo (X-Lock) sobre el inventario.
+            # Todas las transacciones concurrentes sobre este inventory_id esperarán aquí.
+            if not inventory_repo.lock_inventory_for_update(cur, inventory_id):
+                raise NotFoundError("La copia de inventario no existe")
+
+            # 2. Consultar la tarifa oficial de la película (fuente de verdad: MySQL)
             amount = inventory_repo.get_inventory_rate(cur, inventory_id)
             if amount is None:
-                raise NotFoundError("La copia de inventario no existe")
-            if not inventory_repo.is_in_stock(cur, inventory_id):
-                raise UnavailableError()
+                raise NotFoundError("La película asociada al inventario no existe")
 
+            # 3. Comprobación segura de disponibilidad bajo bloqueo exclusivo
+            if inventory_repo.is_inventory_currently_rented(cur, inventory_id):
+                raise UnavailableError("La copia solicitada no está disponible")
+
+            # 4. Insertar alquiler y pago dentro de la misma transacción atómica
             rental_id = rental_repo.insert_rental(cur, inventory_id, customer_id, staff_id)
             payment_id = rental_repo.insert_payment(cur, customer_id, staff_id, rental_id, amount)
 
-            conn.commit()  # ÚNICO commit: rental y payment se confirman juntos
+            conn.commit()  # ÚNICO commit: libera el bloqueo pesimista y confirma
         except Exception:
-            conn.rollback()  # cualquier fallo deshace TODO (atomicidad)
+            conn.rollback()  # Deshace cualquier cambio y libera el bloqueo ante fallo
             raise
         finally:
             cur.close()
