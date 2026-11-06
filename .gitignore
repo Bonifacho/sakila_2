@@ -19,5 +19,7 @@ Desktop.ini
 logs/
 *.pdf
 
-# Evidencias
+# Evidencias y Documentación interna
 evidencias/
+docs/
+
