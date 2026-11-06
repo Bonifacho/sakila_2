@@ -107,11 +107,12 @@ flowchart TD
 * Decorador `@retry_transient_locks` (`app/retry.py`) implementado con Exponential Backoff y Jitter para errores 1213 y 1205, verificado con 6 pruebas unitarias (`scripts/verify_part_c.py`).
 * Documentación teórica y empírica completa en `docs/parte_c.md`.
 
-### ⏳ Fase 4: Optimización e Indexación sobre `payment_big` (PENDIENTE)
-* Análisis de ejecución de Q1 y Q2 mediante `EXPLAIN ANALYZE`.
-* Transformación de Q1 en consulta *sargable* (rango de fechas con paginación).
-* Creación y benchmarking de índices para Q2: comparación entre alternativas e índice cubriente (*Covering Index*).
-* Medición empírica del costo de inserción con 50.000 filas antes y después de indexar.
+### ✅ Fase 4: Optimización e Indexación sobre `payment_big` (COMPLETADA)
+* Análisis de ejecución de Q1 y Q2 mediante `ANALYZE SELECT` sobre 962.760 filas en `payment_big` (`scripts/benchmark_part_d.py`).
+* Reescritura sargable de Q1 (sustituyendo `DATE(payment_date)` por rango semiabierto y paginación `LIMIT 50`) reduciendo el tiempo de 269,35 ms a **2,32 ms** (**116x más rápido**).
+* Diseño y contrastación de 3 alternativas de índices para Q2: demostración empírica de superioridad del **Índice Cubriente** `idx_covering_q2(payment_date, customer_id, amount)` con `Using index` (106,42 ms frente a 633,16 ms del no cubriente).
+* Medición empírica de sobrecarga de escritura: inserción de 50.000 filas antes y después de indexar (+374,5% de tiempo de escritura).
+* Verificación automatizada con 4 tests unitarios en [`scripts/verify_part_d.py`](file:///c:/Users/andre/OneDrive/Documentos/UdeC/Semestre%206/B_D/sakila2/scripts/verify_part_d.py) y documentación en [`docs/parte_d.md`](file:///c:/Users/andre/OneDrive/Documentos/UdeC/Semestre%206/B_D/sakila2/docs/parte_d.md).
 
 ### ⏳ Fase 5: Extensión Híbrida MongoDB (PENDIENTE)
 * Configuración de MongoDB y script ETL `etl_catalog.py` para transformar datos relacionales de Sakila en documentos embebidos (`sakila_catalog.films`).
