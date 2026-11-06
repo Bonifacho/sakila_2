@@ -16,3 +16,4 @@ if __name__ == "__main__":
         print(f"Limpieza completada: {del_count} registros eliminados para inventory_id={inv_id}")
     else:
         run_race_test(num_threads=args.threads, inventory_id=args.inventory_id, out_file=args.out)
+

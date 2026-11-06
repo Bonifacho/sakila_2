@@ -185,3 +185,4 @@ def get_film_from_mongo(film_id: int):
     """Obtiene un documento de película por su _id desde MongoDB."""
     coll = get_films_collection()
     return coll.find_one({"_id": int(film_id)})
+

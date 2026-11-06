@@ -15,11 +15,12 @@ __pycache__/
 Thumbs.db
 Desktop.ini
 
-# Logs
+# Logs y empaquetados
 logs/
 *.pdf
+*.zip
+*.docx
 
 # Evidencias y Documentación interna
 evidencias/
 docs/
-

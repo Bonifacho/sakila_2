@@ -14,3 +14,4 @@ if __name__ == "__main__":
         print(json.dumps(updated_doc, indent=2, ensure_ascii=False))
     else:
         run_etl()
+

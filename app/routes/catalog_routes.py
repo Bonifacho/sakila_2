@@ -44,3 +44,4 @@ def sync_catalog_item(film_id):
     valid_id = parse_int(film_id, "film_id", 1, SMALLINT_MAX)
     doc = catalog_service.sync_film(valid_id)
     return success({"synced": True, "film": doc}, 200)
+

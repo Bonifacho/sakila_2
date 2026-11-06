@@ -68,3 +68,4 @@ def sync_film(film_id: int) -> dict:
         doc["rental_rate"],
     )
     return doc
+
