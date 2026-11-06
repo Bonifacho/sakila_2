@@ -19,3 +19,4 @@ ON payment_big (payment_date);
 -- costosos accesos aleatorios a las páginas de la tabla (Bookmark Lookups).
 CREATE INDEX IF NOT EXISTS idx_covering_q2 
 ON payment_big (payment_date, customer_id, amount);
+

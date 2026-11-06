@@ -53,3 +53,25 @@ def parse_pagination(args, default_size, max_size):
     page = parse_int(args.get("page", "1"), "page", 1, 1_000_000)
     size = parse_int(args.get("page_size", str(default_size)), "page_size", 1, max_size)
     return page, size
+
+
+def parse_float(value, field, min_value=0.0, max_value=999.99):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        raise ValidationError(f"'{field}' debe ser un número decimal válido") from None
+    if not (min_value <= number <= max_value):
+        raise ValidationError(f"'{field}' fuera de rango ({min_value}-{max_value})")
+    return number
+
+
+def parse_str_filter(value, field, max_len=100):
+    if value is None:
+        return None
+    s = str(value).strip()
+    if not s:
+        return None
+    if len(s) > max_len:
+        raise ValidationError(f"'{field}' excede la longitud máxima ({max_len})")
+    return s
+

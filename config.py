@@ -31,6 +31,12 @@ class Config:
     DEFAULT_PAGE_SIZE = 100
     MAX_PAGE_SIZE = 500
 
+    # MongoDB (Extensión Híbrida - Parte E: Catálogo de Lectura)
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://127.0.0.1:27017")
+    MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "sakila_catalog")
+    MONGO_COLLECTION_FILMS = os.getenv("MONGO_COLLECTION_FILMS", "films")
+    MONGO_TIMEOUT_MS = int(os.getenv("MONGO_TIMEOUT_MS", "2000"))
+
     # Flask
     DEBUG = os.getenv("FLASK_DEBUG", "False").lower() == "true"
     PORT = int(os.getenv("PORT", "5000"))

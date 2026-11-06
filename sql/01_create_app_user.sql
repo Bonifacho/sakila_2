@@ -7,14 +7,19 @@
 DROP USER IF EXISTS 'sakila_app'@'localhost';
 CREATE USER 'sakila_app'@'localhost' IDENTIFIED BY '{{APP_DB_PASSWORD}}';
 
--- Lectura: solo las tablas que el servicio consulta
-GRANT SELECT ON sakila.customer    TO 'sakila_app'@'localhost';
-GRANT SELECT ON sakila.staff       TO 'sakila_app'@'localhost';
-GRANT SELECT ON sakila.inventory   TO 'sakila_app'@'localhost';
-GRANT SELECT ON sakila.film        TO 'sakila_app'@'localhost';
-GRANT SELECT ON sakila.rental      TO 'sakila_app'@'localhost';
-GRANT SELECT ON sakila.payment     TO 'sakila_app'@'localhost';
-GRANT SELECT ON sakila.payment_big TO 'sakila_app'@'localhost';
+-- Lectura: solo las tablas que el servicio y el ETL de catálogo consultan
+GRANT SELECT ON sakila.customer      TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.staff         TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.inventory     TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.film          TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.language      TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.category      TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.film_category TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.actor         TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.film_actor    TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.rental        TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.payment       TO 'sakila_app'@'localhost';
+GRANT SELECT ON sakila.payment_big   TO 'sakila_app'@'localhost';
 
 -- Escritura: solo lo que exige el checkout y la devolución
 GRANT INSERT ON sakila.rental  TO 'sakila_app'@'localhost';

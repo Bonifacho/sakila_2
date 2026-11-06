@@ -8,6 +8,7 @@ El error nativo de MySQL solo se escribe en el log del servidor.
 import logging
 
 import mysql.connector
+from pymongo.errors import PyMongoError
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
 
@@ -67,6 +68,11 @@ def register_error_handlers(app):
         logger.error("Error de base de datos errno=%s sqlstate=%s msg=%s",
                      getattr(err, "errno", None), getattr(err, "sqlstate", None), err.msg)
         return _error(500, "INTERNAL_ERROR", "Error interno del servidor")
+
+    @app.errorhandler(PyMongoError)
+    def handle_mongo_error(err):
+        logger.error("Error en catálogo MongoDB: %s", err)
+        return _error(503, "CATALOG_UNAVAILABLE", "El servicio de catálogo no está disponible temporalmente")
 
     @app.errorhandler(HTTPException)
     def handle_http(err):

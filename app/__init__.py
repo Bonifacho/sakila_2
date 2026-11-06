@@ -31,9 +31,10 @@ def create_app():
     _configure_logging(Config.LOG_FILE)
 
     from app.errors import register_error_handlers
-    from app.routes import rental_routes, report_routes
+    from app.routes import catalog_routes, rental_routes, report_routes
 
     app.register_blueprint(rental_routes.bp)
     app.register_blueprint(report_routes.bp)
+    app.register_blueprint(catalog_routes.bp)
     register_error_handlers(app)
     return app
