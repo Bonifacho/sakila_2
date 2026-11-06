@@ -3,7 +3,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, render_template, Response
 
 from config import Config
 
@@ -37,4 +37,13 @@ def create_app():
     app.register_blueprint(report_routes.bp)
     app.register_blueprint(catalog_routes.bp)
     register_error_handlers(app)
+
+    @app.get("/")
+    def index():
+        return render_template("index.html")
+
+    @app.get("/favicon.ico")
+    def favicon():
+        return Response(status=204)
+
     return app

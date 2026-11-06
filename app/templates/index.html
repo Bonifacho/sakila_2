@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sakila Rental Engine — Consola Interactiva API</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1.5rem;
+    }
+    header {
+      max-width: 1400px;
+      margin: 0 auto 1.5rem auto;
+      padding: 1.25rem 1.5rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    header h1 { font-size: 1.35rem; color: var(--accent); }
+    header p { font-size: 0.9rem; color: var(--muted); }
+    .badge-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: #0284c7;
+      color: #fff;
+    }
+    .badge.green { background: #15803d; }
+    .badge.purple { background: #6d28d9; }
+
+    .layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .cards { display: flex; flex-direction: column; gap: 1.25rem; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card h2 {
+      font-size: 1.05rem;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card p.desc {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .method {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .method.post { background: #16a34a; color: #fff; }
+    .method.patch { background: #d97706; color: #fff; }
+    .method.get { background: #0284c7; color: #fff; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.85rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.85rem; }
+    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
+    input, select {
+      width: 100%;
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #0f172a;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.9; }
+    button.secondary { background: #334155; color: var(--text); }
+    button.warn { background: var(--warn); color: #0f172a; }
+    button.danger { background: var(--danger); color: #fff; }
+
+    .inspector {
+      position: sticky;
+      top: 1.5rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .status-pill {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      background: #334155;
+    }
+    .status-pill.ok { background: var(--success); color: #052e16; }
+    .status-pill.err { background: var(--danger); color: #fff; }
+    .req-line {
+      font-family: Consolas, monospace;
+      font-size: 0.82rem;
+      color: var(--accent);
+      background: #0f172a;
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      word-break: break-all;
+    }
+    pre {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      max-height: 460px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+    .sql-helper {
+      margin-top: 0.85rem;
+      background: #052e16;
+      border: 1px solid #16a34a;
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: none;
+    }
+    .sql-helper h4 { font-size: 0.82rem; color: #4ade80; margin-bottom: 0.35rem; }
+    .sql-helper code {
+      display: block;
+      font-family: Consolas, monospace;
+      font-size: 0.78rem;
+      color: #dcfce7;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Sakila Rental Engine — Consola Interactiva de Pruebas</h1>
+      <p>Universidad de Cundinamarca • Sistemas de Base de Datos • Arquitectura Transaccional MySQL + Híbrida MongoDB</p>
+    </div>
+    <div class="badge-group">
+      <span class="badge green">MySQL Pool (10 conn)</span>
+      <span class="badge">ACID + FOR UPDATE</span>
+      <span class="badge purple">MongoDB CQRS Catalog</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="cards">
+
+      <!-- 1. CHECKOUT ACID -->
+      <div class="card">
+        <h2><span class="method post">POST</span> /api/checkout — Alquiler y Pago Atómico</h2>
+        <p class="desc">Calcula la tarifa en el servidor (<code>film.rental_rate</code>), aplica bloqueo pesimista <code>FOR UPDATE</code> e inserta <code>rental</code> y <code>payment</code> en una única transacción.</p>
+        <div class="grid-3">
+          <div>
+            <label>customer_id (1 - 599)</label>
+            <input type="number" id="co_customer" value="1" />
+          </div>
+          <div>
+            <label>inventory_id (ej. 1 - 4581)</label>
+            <input type="number" id="co_inventory" value="4" />
+          </div>
+          <div>
+            <label>staff_id (1 o 2)</label>
+            <input type="number" id="co_staff" value="1" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button onclick="runCheckout()">Ejecutar Checkout (201)</button>
+          <button class="warn" onclick="testNotFoundCheckout()">Probar Cliente Inexistente 99999 (404)</button>
+          <button class="danger" onclick="testTamperCheckout()">Probar Inyectar Campo amount (400)</button>
+        </div>
+      </div>
+
+      <!-- 2. DEVOLUCIÓN Y CONSULTA -->
+      <div class="card">
+        <h2><span class="method patch">PATCH</span> /api/rentals/&lt;id&gt;/return &amp; <span class="method get">GET</span> /api/rentals/&lt;id&gt;</h2>
+        <p class="desc">Reemplaza el borrado físico por devolución lógica (<code>return_date = NOW()</code>), preservando la trazabilidad de <code>payment.rental_id</code>.</p>
+        <div class="grid-2">
+          <div>
+            <label>rental_id</label>
+            <input type="number" id="ret_rental_id" value="1" />
+          </div>
+          <div style="display:flex; align-items:end; gap:0.5rem;">
+            <button class="secondary" onclick="getRental()">Consultar Alquiler (GET)</button>
+            <button onclick="returnRental()">Registrar Devolución (PATCH)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. REPORTE DIARIO SARGABLE -->
+      <div class="card">
+        <h2><span class="method get">GET</span> /api/payments/report — Reporte Diario Sargable y Paginado</h2>
+        <p class="desc">Filtra por rango cronológico <code>payment_date &gt;= día AND payment_date &lt; día+1</code> sin romper el índice B-Tree.</p>
+        <div class="grid-3">
+          <div>
+            <label>Fecha (YYYY-MM-DD)</label>
+            <input type="text" id="rep_day" value="2005-07-09" />
+          </div>
+          <div>
+            <label>Página (page)</label>
+            <input type="number" id="rep_page" value="1" />
+          </div>
+          <div>
+            <label>Tamaño (page_size)</label>
+            <input type="number" id="rep_size" value="5" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button onclick="getReport()">Consultar Reporte (200)</button>
+          <button class="danger" onclick="testSqlInjection()">Probar Payload SQLi: x' OR '1'='1 (400)</button>
+        </div>
+      </div>
+
+      <!-- 4. CATÁLOGO HÍBRIDO MONGODB -->
+      <div class="card">
+        <h2><span class="method get">GET</span> /api/catalog &amp; <span class="method post">POST</span> /api/catalog/sync/&lt;id&gt; — MongoDB</h2>
+        <p class="desc">Consulta documentos desnormalizados en <code>sakila_catalog.films</code> usando índices Multikey (<code>IXSCAN</code>) y sincroniza desde MySQL con <code>sync_film</code>.</p>
+        <div class="grid-3">
+          <div>
+            <label>Categoría (category)</label>
+            <input type="text" id="cat_category" value="Action" placeholder="Ej. Action, Documentary" />
+          </div>
+          <div>
+            <label>Actor (actor)</label>
+            <input type="text" id="cat_actor" value="" placeholder="Ej. PENELOPE GUINESS" />
+          </div>
+          <div>
+            <label>Tarifa Máx (max_rate)</label>
+            <input type="number" step="0.01" id="cat_rate" value="2.99" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>film_id (para consultar o sincronizar)</label>
+            <input type="number" id="cat_film_id" value="1" />
+          </div>
+          <div style="display:flex; align-items:end; gap:0.5rem; flex-wrap:wrap;">
+            <button onclick="searchCatalog()">Buscar en Catálogo</button>
+            <button class="secondary" onclick="getFilmMongo()">Ver Película #ID</button>
+            <button class="warn" onclick="syncFilmMongo()">Sincronizar sync_film(#ID)</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- INSPECTOR DE RESPUESTA -->
+    <aside class="inspector">
+      <div class="inspector-header">
+        <strong>Inspector de Respuesta HTTP / JSON</strong>
+        <span id="status_badge" class="status-pill">Listo</span>
+      </div>
+      <div id="req_info" class="req-line">Selecciona cualquier acción a la izquierda para enviar una petición...</div>
+      <pre id="json_output">{
+  "mensaje": "Haz clic en cualquiera de los botones para probar la API en vivo."
+}</pre>
+
+      <div id="sql_box" class="sql-helper">
+        <h4>Consulta SQL lista para tu captura en MySQL Workbench / DBeaver:</h4>
+        <code id="sql_code"></code>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    async function sendRequest(method, url, bodyObj = null) {
+      const badge = document.getElementById("status_badge");
+      const reqInfo = document.getElementById("req_info");
+      const out = document.getElementById("json_output");
+      const sqlBox = document.getElementById("sql_box");
+      sqlBox.style.display = "none";
+
+      reqInfo.textContent = `${method} ${url}` + (bodyObj ? `\nBody: ${JSON.stringify(bodyObj)}` : "");
+      badge.textContent = "Enviando...";
+      badge.className = "status-pill";
+
+      const t0 = performance.now();
+      try {
+        const opts = { method, headers: {} };
+        if (bodyObj !== null) {
+          opts.headers["Content-Type"] = "application/json";
+          opts.body = JSON.stringify(bodyObj);
+        }
+        const res = await fetch(url, opts);
+        const ms = (performance.now() - t0).toFixed(1);
+        const data = await res.json();
+
+        badge.textContent = `HTTP ${res.status} (${ms} ms)`;
+        badge.className = "status-pill " + (res.ok ? "ok" : "err");
+        out.textContent = JSON.stringify(data, null, 2);
+
+        if (method === "POST" && url === "/api/checkout" && res.status === 201 && data.data) {
+          const rId = data.data.rental_id;
+          document.getElementById("ret_rental_id").value = rId;
+          sqlBox.style.display = "block";
+          document.getElementById("sql_code").textContent =
+`SELECT r.rental_id, r.rental_date, r.inventory_id, r.customer_id, r.return_date,
+       p.payment_id, p.amount, p.payment_date
+FROM rental r
+INNER JOIN payment p ON r.rental_id = p.rental_id
+WHERE r.rental_id = ${rId};`;
+        }
+      } catch (err) {
+        badge.textContent = "Error de Red";
+        badge.className = "status-pill err";
+        out.textContent = String(err);
+      }
+    }
+
+    function runCheckout() {
+      sendRequest("POST", "/api/checkout", {
+        customer_id: Number(document.getElementById("co_customer").value),
+        inventory_id: Number(document.getElementById("co_inventory").value),
+        staff_id: Number(document.getElementById("co_staff").value),
+      });
+    }
+
+    function testNotFoundCheckout() {
+      sendRequest("POST", "/api/checkout", {
+        customer_id: 99999,
+        inventory_id: 4,
+        staff_id: 1,
+      });
+    }
+
+    function testTamperCheckout() {
+      sendRequest("POST", "/api/checkout", {
+        customer_id: 1,
+        inventory_id: 4,
+        staff_id: 1,
+        amount: 0.01,
+      });
+    }
+
+    function getRental() {
+      const id = document.getElementById("ret_rental_id").value;
+      sendRequest("GET", `/api/rentals/${encodeURIComponent(id)}`);
+    }
+
+    function returnRental() {
+      const id = document.getElementById("ret_rental_id").value;
+      sendRequest("PATCH", `/api/rentals/${encodeURIComponent(id)}/return`);
+    }
+
+    function getReport() {
+      const day = encodeURIComponent(document.getElementById("rep_day").value);
+      const page = encodeURIComponent(document.getElementById("rep_page").value);
+      const size = encodeURIComponent(document.getElementById("rep_size").value);
+      sendRequest("GET", `/api/payments/report?day=${day}&page=${page}&page_size=${size}`);
+    }
+
+    function testSqlInjection() {
+      const payload = encodeURIComponent("x' OR '1'='1' LIMIT 5 -- -");
+      sendRequest("GET", `/api/payments/report?day=${payload}`);
+    }
+
+    function searchCatalog() {
+      const params = new URLSearchParams();
+      const cat = document.getElementById("cat_category").value.trim();
+      const act = document.getElementById("cat_actor").value.trim();
+      const rate = document.getElementById("cat_rate").value.trim();
+      if (cat) params.set("category", cat);
+      if (act) params.set("actor", act);
+      if (rate) params.set("max_rate", rate);
+      params.set("page", "1");
+      params.set("page_size", "5");
+      sendRequest("GET", `/api/catalog?${params.toString()}`);
+    }
+
+    function getFilmMongo() {
+      const id = document.getElementById("cat_film_id").value;
+      sendRequest("GET", `/api/catalog/${encodeURIComponent(id)}`);
+    }
+
+    function syncFilmMongo() {
+      const id = document.getElementById("cat_film_id").value;
+      sendRequest("POST", `/api/catalog/sync/${encodeURIComponent(id)}`);
+    }
+  </script>
+</body>
+</html>
