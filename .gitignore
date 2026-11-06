@@ -24,3 +24,4 @@ logs/
 # Evidencias y Documentación interna
 evidencias/
 docs/
+scripts/package_delivery.py

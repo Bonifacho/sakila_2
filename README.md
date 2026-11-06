@@ -141,3 +141,4 @@ python scripts/verify_part_e.py
 | `GET` | `/api/payments/report` | Reporte diario de pagos **sargable** y paginado (`?day=YYYY-MM-DD&page=1&page_size=100`). | MySQL |
 | `GET` | `/api/catalog` | Búsqueda en catálogo documental con filtros opcionales (`?category=Action&actor=PENELOPE+GUINESS&max_rate=2.99&page=1&page_size=20`). | MongoDB (Modelo de Consulta) |
 | `POST` | `/api/catalog/sync/<id>` | Dispara `sync_film(film_id)` para actualizar el documento en MongoDB desde MySQL. | MySQL $\to$ MongoDB |
+
